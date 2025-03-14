@@ -1,5 +1,4 @@
 --[[
-
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -207,6 +206,14 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
 	callback = function()
 		vim.highlight.on_yank()
+	end,
+})
+
+vim.api.nvim_create_autocmd("BufEnter", {
+	pattern = "leetcode.*",
+	callback = function()
+		vim.bo.filetype = "java" -- Set the filetype to Java
+		vim.cmd("setlocal suffixesadd+=.java") -- Add the extension
 	end,
 })
 
@@ -958,6 +965,14 @@ require("lazy").setup({
 				},
 			}
 		end,
+	},
+
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = true,
+		-- use opts = {} for passing setup options
+		-- this is equivalent to setup({}) function
 	},
 
 	-- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
