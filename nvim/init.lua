@@ -616,14 +616,6 @@ require("lazy").setup({
 				end,
 			})
 
-			-- Auto-launch JDTLS for Java files (project or single-file)
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "java",
-				callback = function()
-					require("custom.java")
-				end,
-			})
-
 			-- Change diagnostic symbols in the sign column (gutter)
 			if vim.g.have_nerd_font then
 				local signs = { ERROR = "", WARN = "", INFO = "", HINT = "" }
@@ -979,7 +971,10 @@ require("lazy").setup({
 			vim.g.firenvim_config = {
 				localSettings = {
 					[".*"] = {
-						takeover = "never", -- Prevent Firenvim from automatically taking over
+						takeover = "never", -- or "always" if you want firenvim to always replace
+						cmdline = "neovim",
+						priority = 0,
+						filename = "/home/y/.local/share/firenvim-java/{hostname}_{pathname}_{query}.java",
 					},
 				},
 			}
