@@ -974,10 +974,19 @@ require("lazy").setup({
 						takeover = "never", -- or "always" if you want firenvim to always replace
 						cmdline = "neovim",
 						priority = 0,
-						filename = "/home/y/.local/share/firenvim-java/{hostname}_{pathname}_{query}.java",
+						filename = "/home/y/.local/share/firenvim-project/src/main/java/firenvim/{hostname}_{pathname}.java",
 					},
 				},
 			}
+			vim.api.nvim_create_autocmd("BufEnter", {
+				pattern = "/home/y/.local/share/firenvim-java/*/src/Main.java",
+				callback = function(args)
+					local dir = vim.fn.fnamemodify(args.file, ":h")
+					if vim.fn.isdirectory(dir) == 0 then
+						vim.fn.mkdir(dir, "p")
+					end
+				end,
+			})
 		end,
 	},
 
