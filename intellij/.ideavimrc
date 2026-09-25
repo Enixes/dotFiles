@@ -1,52 +1,134 @@
-" vim settings
+" IdeaVim 2.47+ configuration
+" Updated from the original config; reload with :source ~/.ideavimrc
+
+" -----------------------------------------------------------------------------
+" Core Vim settings
+" -----------------------------------------------------------------------------
 set scrolloff=5
 set history=1000
-
-" status bar
 set showmode
+set timeout
+set timeoutlen=500
 
-" leader
-map <space> <nop>
-let mapleader="\<space>"
-
-" find and replace
+" Search and substitute
 set hlsearch
 set incsearch
 set ignorecase
 set smartcase
 set gdefault
-nmap <leader>nh :noh<CR>
+set inccommand=nosplit
 
-" ideavim settings
+" Leader
+map <Space> <Nop>
+let mapleader="\<Space>"
+nmap <leader>nh :nohlsearch<CR>
+
+" IdeaVim-specific behavior
 set ideajoin
 set ideamarks
 set idearefactormode=normal
 set ideastatusicon=gray
+set ideawindowjumps
 
-" better HJKL
+" -----------------------------------------------------------------------------
+" Built-in/emulated IdeaVim plugins
+" -----------------------------------------------------------------------------
+
+" Existing editing plugins
+Plug 'tpope/vim-surround'
+Plug 'tommcdo/vim-exchange'
+Plug 'machakann/vim-highlightedyank'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'kana/vim-textobj-entire'
+Plug 'dbakker/vim-paragraph-motion'
+Plug 'vim-scripts/ReplaceWithRegister'
+set NERDTree
+
+" Requires the IdeaVim-EasyMotion and AceJump IDE plugins
+Plug 'easymotion/vim-easymotion'
+
+" Newer high-value plugins (IdeaVim 2.36-2.47)
+Plug 'tpope/vim-abolish'
+Plug 'wellle/targets.vim'
+Plug 'bkad/CamelCaseMotion'
+Plug 'jeetsukumaran/vim-indentwise'
+Plug 'vim-scripts/YankRing.vim'
+Plug 'kshenoy/vim-signature'
+Plug 'kana/vim-textobj-line'
+Plug 'bronson/vim-visual-star-search'
+set functextobj
+set classtextobj
+set youcompleteme
+packadd matchit
+
+" Plugin settings
+let g:highlightedyank_highlight_duration = "1000"
+let g:highlightedyank_highlight_color = "rgba(57, 197, 187, 155)"
+let g:yankring_max_history = 100
+
+" targets.vim supersedes argtextobj and avoids competing ia/aa mappings.
+" Useful examples: cia, da,, cin), ciq, cit
+
+" CamelCase/snake_case motions without occupying the crowded leader namespace.
+map <silent> ]w <Plug>CamelCaseMotion_w
+map <silent> [w <Plug>CamelCaseMotion_b
+map <silent> ]e <Plug>CamelCaseMotion_e
+map <silent> [e <Plug>CamelCaseMotion_ge
+
+" Keep <C-p> for JumpToLastWindow; cycle the yank ring after a paste with [y/]y.
+nmap [y <Plug>YankRingReplacePrevious
+nmap ]y <Plug>YankRingReplaceNext
+
+" One-keystroke labelled jump (EasyMotion)
+map <leader>jj <Plug>(easymotion-s)
+
+" Optional: install Which-Key from the JetBrains Marketplace, then uncomment.
+" set which-key
+
+" Optional: AceJump is already installed for EasyMotion; uncomment to add
+" keyboard hints and Vim navigation outside the editor.
+" set VimEverywhere
+
+" -----------------------------------------------------------------------------
+" Motions and editing
+" -----------------------------------------------------------------------------
+
+" Fast line/paragraph navigation (intentional overrides of H/J/K/L)
 map H ^
 map L $
 map J }
 map K {
 
-" better escape
-imap jk <Esc>
+" Fast Insert-mode escape
+inoremap jk <Esc>
 
-" location
+" IDE-wide location history. Native per-split Vim jumps remain on <leader>jo/ji.
 nmap <C-o> <Action>(Back)
 nmap <C-i> <Action>(Forward)
+nnoremap <leader>jo <C-o>
+nnoremap <leader>ji <C-i>
 
-" buffer (buffer < window < tab)
+" Continuous visual indentation
+xnoremap < <gv
+xnoremap > >gv
+
+" Copy the entire buffer to the system clipboard; preserve Vim's <C-a> increment.
+nnoremap <leader>ya ggVG"+y
+
+" -----------------------------------------------------------------------------
+" Editors, tabs, splits and tool windows
+" -----------------------------------------------------------------------------
+
+" Editors (IDE buffers)
 nmap <leader>xx <Action>(CloseContent)
 nmap <leader>xa <Action>(CloseAllEditors)
 nmap <leader>xo <Action>(CloseAllEditorsButActive)
 nmap <leader>xp <Action>(CloseAllUnpinnedEditors)
 
-" window
+" Editor tabs
 nmap <C-Tab> <Action>(PreviousTab)
 nmap <Tab> <Action>(NextTab)
 nmap <leader>p <Action>(PinActiveEditorTab)
-
 nmap <leader>1 <Action>(GoToTab1)
 nmap <leader>2 <Action>(GoToTab2)
 nmap <leader>3 <Action>(GoToTab3)
@@ -57,14 +139,15 @@ nmap <leader>7 <Action>(GoToTab7)
 nmap <leader>8 <Action>(GoToTab8)
 nmap <leader>9 <Action>(GoToTab9)
 
-" tab
-map <leader>sh <Action>(MoveTabLeft)
-map <leader>sj <Action>(MoveTabDown)
-map <leader>sk <Action>(MoveTabUp)
-map <leader>sl <Action>(MoveTabRight)
-map <leader>sH <Action>(SplitHorizontally)
-map <leader>sV <Action>(SplitVertically)
+" Move tabs/groups. The old <leader>sh collided with Local History.
+nmap <leader>th <Action>(MoveTabLeft)
+nmap <leader>tj <Action>(MoveTabDown)
+nmap <leader>tk <Action>(MoveTabUp)
+nmap <leader>tl <Action>(MoveTabRight)
+nmap <leader>sH <Action>(SplitHorizontally)
+nmap <leader>sV <Action>(SplitVertically)
 
+" Split focus
 nmap <C-p> <Action>(JumpToLastWindow)
 nmap <M-i> <Action>(PrevSplitter)
 nmap <M-o> <Action>(NextSplitter)
@@ -73,15 +156,20 @@ nmap <C-j> <C-w>j
 nmap <C-h> <C-w>h
 nmap <C-l> <C-w>l
 
+" Split sizing/lifecycle
 nmap <leader>ww <Action>(HideAllWindows)
-map <leader>wk <Action>(StretchSplitToTop)
+nmap <leader>wk <Action>(StretchSplitToTop)
 nmap <leader>wj <Action>(StretchSplitToBottom)
 nmap <leader>wh <Action>(StretchSplitToLeft)
 nmap <leader>wl <Action>(StretchSplitToRight)
 nmap <leader>wm <Action>(MaximizeEditorInSplit)
 nmap <leader>wu <Action>(UnsplitAll)
 
-" menu
+" -----------------------------------------------------------------------------
+" IDE menus and files
+" -----------------------------------------------------------------------------
+
+" Menus
 nmap <leader>mm <Action>(MainMenu)
 nmap <leader>ma <Action>(AnalyzeMenu)
 nmap <leader>mb <Action>(BuildMenu)
@@ -92,20 +180,20 @@ nmap <leader>ms <Action>(ScopeViewPopupMenu)
 nmap <leader>mt <Action>(EditorTabPopupMenu)
 nmap <leader>mw <Action>(ToolWindowsGroup)
 
-" file
+" Files and project search
 nmap <leader>of <Action>(OpenFile)
+nmap <leader>ow <Action>($SearchWeb)
 nmap <leader>yp <Action>(CopyAbsolutePath)
 nmap <leader>rf <Action>(RecentFiles)
 nmap <leader>rl <Action>(RecentLocations)
-nmap <leader>rp <Action>(ManageRecentProjects)
+nmap <leader>rP <Action>(ManageRecentProjects)
 nmap <leader>sh <Action>(LocalHistory.ShowHistory)
 nmap <leader>sf <Action>(ShowFilePath)
 nmap <leader>si <Action>(SelectIn)
 nmap <leader>fp <Action>(FindInPath)
 nmap <leader>rp <Action>(ReplaceInPath)
-nmap <leader>sw <Action>($SearchWeb)
 
-" tag
+" Symbols/usages
 nmap <leader>fu <Action>(FindUsages)
 nmap <leader>fs <Action>(FileStructurePopup)
 nmap <leader>su <Action>(ShowUsages)
@@ -114,7 +202,11 @@ nmap <leader>qp <Action>(QuickPreview)
 nmap <leader>qd <Action>(QuickDefinition)
 nmap <leader>qD <Action>(QuickTypeDefinition)
 
-" code
+" -----------------------------------------------------------------------------
+" Code, refactoring, run and debug
+" -----------------------------------------------------------------------------
+
+" Code
 map <leader>c <Action>(CommentByLineComment)
 map <leader>C <Action>(CommentByBlockComment)
 nmap <leader>qf <Action>(ShowIntentionActions)
@@ -127,24 +219,24 @@ nmap <leader>so <Action>(SelectAllOccurrences)
 nmap <leader>gc <Action>(Generate)
 nmap <leader>gt <Action>(GoToTest)
 
-" run
-nmap <leader>rc <Action>(ContextRun)
-nmap <leader>rx<Action>(chooseRunConfiguration)
+" Run
+nmap <leader>rc <Action>(RunClass)
+nmap <leader>rx <Action>(ChooseRunConfiguration)
 nmap <leader>rr <Action>(Rerun)
-nmap <leader>rt <Action>(RunTests)
+nmap <leader>rt <Action>(RerunFailedTests)
 nmap <leader>rs <Action>(Stop)
 
-" debug
-nmap <leader>dc <Action>(ContextDebug)
+" Debug
+nmap <leader>dc <Action>(DebugClass)
 nmap <leader>dx <Action>(Debug)
 nmap <leader>db <Action>(ToggleLineBreakpoint)
 nmap <leader>de <Action>(EditBreakpoint)
 nmap <leader>dv <Action>(ViewBreakpoints)
 
-" build
-nmap <leader>bb <Action>(BuildMenu)
+" Build
+nmap <leader>bb <Action>(CompileDirty)
 
-" refactor
+" Refactor
 nmap <leader>rn <Action>(RenameElement)
 nmap <leader>re <Action>(Refactorings.QuickListPopupAction)
 nmap <leader>uw <Action>(Unwrap)
@@ -152,20 +244,23 @@ nmap <leader>sw <Action>(SurroundWith)
 nmap <leader>sd <Action>(SafeDelete)
 nmap <leader>oi <Action>(OptimizeImports)
 
-" hierarchy
+" Hierarchy
 nmap <leader>hc <Action>(CallHierarchy)
 nmap <leader>hm <Action>(MethodHierarchy)
 nmap <leader>ht <Action>(TypeHierarchy)
 
-" collapse
-nmap zz <Action>(ExpandCollapseToggleAction)
-nmap za <Action>(CollapseAllRegions)
-nmap zA <Action>(ExpandAllRegions)
+" Folds: use Vim-standard meanings and keep zz for centering the cursor.
+nmap za <Action>(ExpandCollapseToggleAction)
+nmap zM <Action>(CollapseAllRegions)
+nmap zR <Action>(ExpandAllRegions)
 
-" zen
+" Zen
 nmap <leader>z <Action>(ToggleZenMode)
 
-" []
+" -----------------------------------------------------------------------------
+" Bracket navigation and goto
+" -----------------------------------------------------------------------------
+
 nmap [b <Action>(PreviousTab)
 nmap ]b <Action>(NextTab)
 nmap [g <Action>(GotoPreviousError)
@@ -179,7 +274,6 @@ nmap ]m <Action>(MethodDown)
 nmap [c <Action>(JumpToLastChange)
 nmap ]c <Action>(JumpToNextChange)
 
-" goto
 nmap <leader>a <Action>(GotoAction)
 nmap ga <Action>(GotoAction)
 nmap gc <Action>(GotoClass)
@@ -194,78 +288,36 @@ nmap gi <Action>(GotoImplementation)
 nmap gI <Action>(QuickImplementations)
 nmap gn <Action>(ShowNavBar)
 
-" terminal
+" -----------------------------------------------------------------------------
+" Terminal, bookmarks, tasks and integrations
+" -----------------------------------------------------------------------------
+
 nmap <leader>tt <Action>(ActivateTerminalToolWindow)
 nmap <leader>tc <Action>(Terminal.OpenInTerminal)
 
-" bookmark
+" These intentionally consume local marks m and s.
 nmap mm <Action>(ToggleBookmark)
 nmap ms <Action>(ShowBookmarks)
 
-" todo
 nmap <leader>to <Action>(ActivateTODOToolWindow)
-
-" task
 nmap <leader>ts <Action>(tasks.goto)
 
-" idea join
+" Explicit backslash namespace for lower-frequency actions
 nmap \\jl <Action>(EditorJoinLines)
-
-" gist
 nmap \\cg <Action>(Github.Create.Gist)
-
-" vcs
-nmap <leader>v <Action>(VcsGroups)
-
-" open IdeaVim settings
 nmap \\v <Action>(VimActions)
 
-" text-object (bundle plugin)
-set vim-paragraph-motion
-set textobj-indent
-set textobj-entire
-set argtextobj
+" VCS
+nmap <leader>v <Action>(VcsGroups)
 
-" jump-motion (required idea plugin: IdeaVim-EasyMotion, AceJump)
-set easymotion
-
-" highlight yank (bundle plugin)
-set highlightedyank
-let g:highlightedyank_highlight_duration = "1000"
-let g:highlightedyank_highlight_color = "rgba(57, 197, 187, 155)"
-
-" translation (required idea plugin: Translation)
+" Translation (requires the Translation IDE plugin)
 nmap \\tt <Action>($ShowTranslationDialogAction)
 nmap \\ts <Action>($TranslateTextComponent)
 nmap \\ti <Action>($InclusiveTranslateAction)
 nmap \\te <Action>($ExclusiveTranslateAction)
 
-" string manipulate (required idea plugin: String Manipulation)
+" String Manipulation IDE plugin
 nmap <leader>ss <Action>(osmedile.intellij.stringmanip.PopupChoiceAction)
 
-" code screenshot (required idea plugin: Code Screenshots)
+" Code Screenshots IDE plugin
 nmap <leader>cs <Action>(one.util.ideaplugin.screenshoter.CopyImageAction)
-
-" surround (bundle plugin)
-" usage: https://github.com/tpope/vim-surround
-" <Hello World!>
-set surround
-
-" exchange (bundle plugin)
-" usage: https://github.com/tommcdo/vim-exchange
-set exchange
-
-" nerdtree (bundle plugin)
-set NERDTree
-
-" replace with register (bundle plugin)
-" usage: https://github.com/vim-scripts/ReplaceWithRegister
-set ReplaceWithRegister
-
-" continuous shift
-xnoremap < <gv
-xnoremap > >gv
-
-" alias
-nmap <C-a> ggVG"+y
-
