@@ -37,7 +37,7 @@ set ideawindowjumps
 " Existing editing plugins
 Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-exchange'
-Plug 'machakann/vim-highlightedyank'
+set highlightedyank
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'kana/vim-textobj-entire'
 Plug 'dbakker/vim-paragraph-motion'
