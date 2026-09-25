@@ -26,7 +26,7 @@ nmap <leader>nh :nohlsearch<CR>
 " IdeaVim-specific behavior
 set ideajoin
 set ideamarks
-set idearefactormode=normal
+set idearefactormode=keep
 set ideastatusicon=gray
 set ideawindowjumps
 
